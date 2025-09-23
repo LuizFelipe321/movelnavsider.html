@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CorDeFundo</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta nome="theme-color" content="#000000">
+
+  <style>
+    ::selection {
+      background-color: #FF8C00;
+      color: white;
+    }
+
+    #titulo {
+      animation: pulse 1s infinite alternate;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0% {
+        color: #FFD700;
+      }
+      100% {
+        color: #FF8C00;
+      }
+    }
+
+    body {
+      transition: background-color 1s;
+      font-family: Arial, sans-serif;
+      color: black;
+      text-align: center;
+      padding-top: 70px;
+      margin: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-theme {
+      background-color: #333;
+      color: white;
+    }
+
+    .container.dark-theme {
+      background-color: #444;
+    }
+
+    #modo-btn {
+      padding: 10px 20px;
+      background-color: #FF8C00;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    #modo-btn:hover {
+      background-color: #FFD700;
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 0; 
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #111;
+      overflow-x: hidden;
+      transition: 0.5s ease; 
+      padding-top: 60px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 25px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      color: #FF8C00;
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+    }
+
+    #menu-btn {
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 2;
+    }
+
+    #menu-btn:hover {
+      color: #FF8C00;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 18px;
+        padding-top: 50px;
+      }
+
+      .container {
+        width: 90%;
+      }
+
+      #titulo {
+        font-size: 28px;
+      }
+
+      #texto {
+        font-size: 16px;
+      }
+
+      #hora, #data, #mensagem {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        font-size: 14px;
+        padding-top: 40px;
+      }
+
+      .container {
+        width: 95%;
+      }
+
+      #titulo {
+        font-size: 24px;
+      }
+
+      #texto {
+        font-size: 14px;
+      }
+
+      #hora, #data, #mensagem {
+        font-size: 12px;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      body {
+        font-size: 20px;
+        padding-top: 70px;
+      }
+
+      .container {
+        width: 75%;
+      }
+
+      #titulo {
+        font-size: 36px;
+      }
+
+      #texto {
+        font-size: 18px;
+      }
+
+      #hora, #data, #mensagem {
+        font-size: 16px;
+      }
+    }
+
+    @media only screen and (min-device-pixel-ratio: 2), 
+           only screen and (min-resolution: 192dpi) {
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Barra Lateral -->
+<div id="mySidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+  <a href="#">Home</a>
+  <a href="#">Sobre</a>
+  <a href="#">Contatos</a>
+  <a href="#">Ajuda</a>
+</div>
+
+<span id="menu-btn" onclick="openNav()">☰ Menu</span>
+
+<div class="container">
+  <h1 id="titulo">Bem-vindo(a)!</h1>
+  <p id="texto">A cor da página mudará automaticamente conforme o horário atual.</p>
+
+  <p id="hora"></p>
+  <p id="data"></p>
+  <p id="mensagem"></p>
+  <p id="frase"></p>
+  <p id="diaTipo"></p>
+
+  <button id="modo-btn" onclick="toggleTheme()">Alternar Tema</button>
+</div>
+
+<script>
+  
+  function openNav() {
+    document.getElementById("mySidebar").style.width = "250px"; 
+  }
+
+  function closeNav() {
+    document.getElementById("mySidebar").style.width = "0"; 
+  }
+
+  let frasesManha = [
+    "Bom dia! Que seu dia seja maravilhoso!",
+    "Acorda e brilha! Hoje é um novo dia!",
+    "Bom dia, que a energia positiva invada seu dia!",
+    "A manhã é a chance de começar tudo de novo!",
+    "Que a luz do sol te traga boas energias!"
+  ];
+
+  let frasesTarde = [
+    "Boa tarde! Continue arrasando!",
+    "A tarde é perfeita para realizar seus sonhos!",
+    "Hora de dar aquele gás para o restante do dia!",
+    "Boa tarde! Que sua tarde seja leve e produtiva!",
+    "O melhor da tarde é que você está mais perto da realização dos seus sonhos!"
+  ];
+
+  let frasesNoite = [
+    "Boa noite! Que o descanso seja revigorante.",
+    "A noite chegou, é hora de descansar e sonhar.",
+    "Boa noite! Que seus sonhos sejam doces e tranquilos.",
+    "O céu estrelado espera por você. Boa noite!",
+    "Boa noite! Amanhã será um novo dia para conquistar mais!"
+  ];
+
+  let frasesMadrugada = [
+    "Boa madrugada! O silêncio traz paz.",
+    "A madrugada é o momento perfeito para refletir.",
+    "Quem está acordado agora tem a tranquilidade da noite.",
+    "Boa madrugada! Que seus pensamentos sejam calmos e serenos.",
+    "O silêncio da madrugada traz inspiração. Boa noite!"
+  ];
+
+  let frases = [];
+
+  function tempo() {
+    const agora = new Date();
+    const hora = agora.getHours();
+    const minutos = agora.getMinutes().toString().padStart(2, "0");
+    const segundos = agora.getSeconds().toString().padStart(2, '0');
+
+    let cor;
+    let mensagem;
+
+    if (hora >= 6 && hora < 12) {
+      cor = "#FFD700"; 
+      mensagem = "☀️ Bom dia!";
+      frases = frasesManha;
+    } else if (hora >= 12 && hora < 18) {
+      cor = "#FF8C00"; 
+      mensagem = "Boa tarde!";
+      frases = frasesTarde;
+    } else if (hora >= 18 && hora < 23) {
+      cor = "#1E90FF"; 
+      mensagem = "🌙 Boa noite!";
+      frases = frasesNoite;
+    } else {
+      cor = "#2F4F4F";
+      mensagem = "🌅 Boa madrugada!";
+      frases = frasesMadrugada;
+    }
+
+    document.body.style.backgroundColor = cor;
+    document.getElementById("titulo").innerHTML = mensagem;
+    document.getElementById("hora").innerText = `⏱️ Agora são ${hora}:${minutos}:${segundos}`;
+
+    const opcoes = {
+      weekday: "long", 
+      year: "numeric",
+      month: "long",  
+      day: "numeric"   
+    };
+
+    const dataFormatada = agora.toLocaleDateString("pt-BR", opcoes);
+    document.getElementById("data").innerText = '📅 ' + dataFormatada;
+    document.getElementById("mensagem").innerText = mensagem;
+
+    const diaSemana = agora.getDay();
+    let tipoDia;
+
+    if (diaSemana >= 1 && diaSemana <= 5) {
+      tipoDia = "Hoje é dia útil!";
+    } else {
+      tipoDia = "Bom final de semana!";
+    }
+
+    document.getElementById("diaTipo").innerText = tipoDia;
+  }
+
+  function trocarFrase() {
+    const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
+    document.getElementById("frase").innerHTML = fraseAleatoria;
+  }
+
+  function toggleTheme() {
+    const body = document.body;
+    body.classList.toggle("dark-theme"); 
+    document.querySelector('.container').classList.toggle('dark-theme'); 
+  }
+
+  tempo();
+  setInterval(tempo, 1000); 
+  trocarFrase();
+  setInterval(trocarFrase, 5000); 
+
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker registrado"))
+      .catch(err => console.log("Erro no SW:", err));
+  }
+  
+</script>
+
+</body>
+</html>
